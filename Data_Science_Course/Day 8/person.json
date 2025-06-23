@@ -1,0 +1,12 @@
+{
+    "name": "ajantha",
+    "age": 80,
+    "phone": 123456,
+    "country": "India",
+    "skill": [
+        "py",
+        "ml",
+        "dl"
+    ],
+    "city": "chennai"
+}

@@ -1,0 +1,232 @@
+create database dtm43;
+use dtm43;
+create table employee(
+emp_id int primary key,
+fname varchar(20),
+lname varchar(20),
+dept varchar(10),
+salary decimal(10,2),
+hiredate date);
+alter table employee add email varchar(30);
+describe employee;
+alter table employee rename column email to email_address;
+describe employee;
+alter table employee drop column email_address;
+describe employee;
+use mdtm32;
+drop table student;
+drop database mdtm32;
+
+use dtm43;
+insert into employee 
+values(101,'ajantha','devi','R&D',5000.00,'2025-01-01');
+insert into employee values(102,'ajan','dev','HR',5000.00,'2025-01-13');
+insert into employee values(103,'aj','de','HR',5000.00,'2024-12-30');# yyyy-mm-dd
+select * from employee;
+update employee 
+set salary =salary+5000 
+where dept = 'R&D';
+
+select * from employee;
+desc employee;
+describe employee;
+
+insert into employee (emp_id, fname, dept)
+values(201,'ajantha','HR');
+select * from employee;
+insert into employee values
+(104,'gs','dev','HR',5000.00,'2025-01-13'),
+(105,'sfd','dev','R&D',5000.00,'2025-01-13'),
+(106,'sg','dev','HR',5000.00,'2025-01-03'),
+(107,'gd','dev','R&D',5000.00,'2025-01-14'),
+(108,'ytr','dev','HR',5000.00,'2025-01-15');
+#create table
+create table student (ID int, Fname varchar(20), Lname varchar(20))
+select * from student;
+insert into student values (101, "Riyaan", "jobs");
+update student set ID=203
+
+insert into employee(emp_id, fname,lname) select * from student
+select * from employee;
+select * from employee where dept = 'HR'
+
+delete from employee 
+where hiredate = '2025-01-13'
+select * from employee;
+insert into employee values(302,'ajan','dev','HR1',5000.00,'2025-01-13');
+select * from employee;
+
+# DCL
+# grant / revoke 
+grant select, insert, update on employee to user_1;
+revoke insert, update on employee to user_1;
+
+# built in func - string
+
+select upper('hello')
+select lower ("WorLd")
+select concat("ajan", " ", "devi") 
+select concat("ajan", " ", "devi") as fullname
+select length("sql function and discussion")
+
+# numeric
+select abs(-20), power(2,3), sqrt(25) # basic
+select round(123.456789, 2), ceil(5.3), floor(5.9)# rounding
+select round(123.476789, 2), ceil(5.8), floor(5.1)
+ # date/time
+ select current_date, current_time
+ select current_date + interval '5' day # add or subtract
+ select extract(year from current_date)
+ select extract(month from current_date)
+# Aggregate func
+
+select count(*) as Tot_empl,
+avg(salary) as Avg_salary,
+sum(salary) as Salary_tot,
+max(salary) as high_pay,
+min(salary) as least_pay
+from employee;
+
+
+select emp_id, dept, salary,
+rank() over(partition by dept order by salary desc) as salary_rank
+from employee;
+select emp_id, salary,
+rank() over(order by salary desc) as salary_rank,
+dense_rank()over(order by salary desc) as Dense_salary_rank
+from employee;
+
+select emp_id, dept, salary,
+sum(salary) over(partition by dept) as tot_sal
+from employee;
+
+select emp_id, hiredate, salary,
+sum(salary) over(order by hiredate) as tot_running
+from employee;
+
+
+select * from employee where dept  = 'HR'# <, >, 
+select * from employee where salary<8000
+# and, or 
+select * from employee where dept  = 'HR' and salary <=5000
+
+select * from employee 
+ORDER BY salary
+select * from employee 
+ORDER BY hiredate
+
+select * from employee 
+ORDER BY dept, salary desc
+
+select distinct dept from employee
+select distinct dept, hiredate from employee
+
+# limit
+select * from employee
+order by salary desc
+#---
+select * from employee
+order by salary desc
+limit 5 
+
+# Top (sql Server)
+select TOP 5 * from employee
+order by salary desc
+
+select * from employee
+where dept in ("HR", "HR1")
+select * from employee
+where hiredate between '2025-01-13' and '2025-01-15'
+select * from employee
+select * from employee
+where fname like 'a%'
+
+select * from employee
+where lname is null
+
+ select * from employee
+where dept is not null
+
+
+CREATE TABLE addresses (
+    ADR_ID INT PRIMARY KEY,
+    ADR_CITY VARCHAR(50),
+    ADR_COUNTRY VARCHAR(50)
+);
+
+CREATE TABLE persons (
+    PRS_ID INT PRIMARY KEY,
+    PRS_FATHER_ID INT,
+    PRS_MOTHER_ID INT,
+    PRS_ADR_ID INT,
+    PRS_FIRST_NAME VARCHAR(50),
+    PRS_SURNAME VARCHAR(50),
+    FOREIGN KEY (PRS_ADR_ID) REFERENCES addresses(ADR_ID),
+    FOREIGN KEY (PRS_FATHER_ID) REFERENCES persons(PRS_ID),
+    FOREIGN KEY (PRS_MOTHER_ID) REFERENCES persons(PRS_ID)
+);
+
+
+INSERT INTO addresses (ADR_ID, ADR_CITY, ADR_COUNTRY) VALUES
+(1, 'RIGA', 'LATVIA'),
+(2, 'BERLIN', 'GERMANY'),
+(3, 'NEW YORK', 'USA');
+
+select * from addresses;
+
+INSERT INTO persons (PRS_ID, PRS_FATHER_ID, PRS_MOTHER_ID, PRS_ADR_ID, PRS_FIRST_NAME, PRS_SURNAME) VALUES
+(1, NULL, NULL, NULL, 'JANIS', 'BERZINS'),
+(2, 1, NULL, 2, 'PETER', 'BERZINS'),
+(3, NULL, 2, 2, 'ANN', 'SMYTH'),
+(4, 2, 3, 2, 'CHARLES', 'BERZINS');
+
+select * from persons;
+# cross join
+select PRS_FIRST_NAME, PRS_SURNAME, ADR_CITY
+from persons, addresses
+select PRS_FIRST_NAME, PRS_SURNAME, ADR_CITY
+from persons cross join addresses
+select PRS_FIRST_NAME, PRS_SURNAME, ADR_CITY
+from persons
+inner join addresses on PRS_ADR_ID = ADR_ID
+and PRS_FIRST_NAME like 'P%'
+
+select PRS_FIRST_NAME, PRS_SURNAME, ADR_CITY
+from persons
+inner join addresses on PRS_ADR_ID = ADR_ID
+or PRS_FIRST_NAME like 'P%'
+# add => null
+select PRS_FIRST_NAME, PRS_SURNAME, ADR_CITY
+from persons
+left outer join addresses on PRS_ADR_ID = ADR_ID
+# person -> null
+select PRS_FIRST_NAME, PRS_SURNAME, ADR_CITY
+from addresses
+left outer join persons on PRS_ADR_ID = ADR_ID
+
+# person => null
+select PRS_FIRST_NAME, PRS_SURNAME, ADR_CITY
+from persons
+right outer join addresses on PRS_ADR_ID = ADR_ID
+
+select * from employee
+
+select dept, sum(salary) as tot_sal
+from employee
+group by dept
+select dept, count(*) as tot_emp
+from employee
+group by dept
+
+select fname, salary,
+case when salary > 5000 then 'high'
+when salary is null then 'invalid'
+else 'low'
+end as salary_level
+from employee
+
+select * from employee as e
+where salary > (select avg(salary)from employee where dept = e.dept)
+
+select * from employee as e
+where salary < (select avg(salary)from employee where dept = e.dept)
